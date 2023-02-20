@@ -22,9 +22,12 @@
     mixins: [Emitter],
 
     props: {
+      // 指令
       command: {},
       disabled: Boolean,
+      // 显示分割线
       divided: Boolean,
+      // 图标类名
       icon: String
     },
 

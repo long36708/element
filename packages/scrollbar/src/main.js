@@ -56,11 +56,17 @@ export default {
         style = gutterStyle;
       }
     }
+
+    // el-scrollbar__view
+    // 插槽中的内容
     const view = h(this.tag, {
       class: ['el-scrollbar__view', this.viewClass],
       style: this.viewStyle,
       ref: 'resize'
     }, this.$slots.default);
+
+    // el-scrollbar__wrap
+    // 用来包裹 el-scrollbar__view
     const wrap = (
       <div
         ref="wrap"
@@ -70,6 +76,8 @@ export default {
         { [view] }
       </div>
     );
+
+    // 节点
     let nodes;
 
     if (!this.native) {

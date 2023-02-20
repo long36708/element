@@ -17,6 +17,7 @@
 
     inject: ['rootMenu'],
     props: {
+      // 分组标题
       title: {
         type: String
       }

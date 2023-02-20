@@ -19,10 +19,13 @@ export default class TreeStore {
       store: this
     });
 
+    // 若是懒加载 且 this.load
     if (this.lazy && this.load) {
       const loadFn = this.load;
       loadFn(this.root, (data) => {
+        // 根节点创建孩子
         this.root.doCreateChildren(data);
+        // 初始化默认选中的节点
         this._initDefaultCheckedNodes();
       });
     } else {
@@ -33,10 +36,12 @@ export default class TreeStore {
   filter(value) {
     const filterNodeMethod = this.filterNodeMethod;
     const lazy = this.lazy;
+    // 遍历
     const traverse = function(node) {
       const childNodes = node.root ? node.root.childNodes : node.childNodes;
 
       childNodes.forEach((child) => {
+        // 当前遍历的子节点是否可见
         child.visible = filterNodeMethod.call(child, value, child.data, child);
 
         traverse(child);
@@ -44,9 +49,13 @@ export default class TreeStore {
 
       if (!node.visible && childNodes.length) {
         let allHidden = true;
+        // 子节点中有一个是可见的
+        // 取反，即子节点中没有一个是可见的。即所有都是隐藏的
         allHidden = !childNodes.some(child => child.visible);
 
+        // 若是根节点
         if (node.root) {
+          // 所有都隐藏，则根节点隐藏
           node.root.visible = allHidden === false;
         } else {
           node.visible = allHidden === false;
@@ -54,6 +63,7 @@ export default class TreeStore {
       }
       if (!value) return;
 
+      // 若节点可见，且不是叶子节点，且不是懒加载 节点展开
       if (node.visible && !node.isLeaf && !lazy) node.expand();
     };
 
@@ -105,14 +115,18 @@ export default class TreeStore {
     }
   }
 
+  // 初始化默认选中的节点
   _initDefaultCheckedNodes() {
     const defaultCheckedKeys = this.defaultCheckedKeys || [];
     const nodesMap = this.nodesMap;
 
+    // 遍历默认选中的节点
     defaultCheckedKeys.forEach((checkedKey) => {
+      // 当前遍历的节点
       const node = nodesMap[checkedKey];
 
       if (node) {
+        // 设置节点选中
         node.setChecked(true, !this.checkStrictly);
       }
     });
@@ -313,6 +327,7 @@ export default class TreeStore {
 
   setCurrentNode(currentNode) {
     const prevCurrentNode = this.currentNode;
+    // 若之前的当前节点存在，设置其 isCurrent = false
     if (prevCurrentNode) {
       prevCurrentNode.isCurrent = false;
     }
@@ -322,17 +337,21 @@ export default class TreeStore {
 
   setUserCurrentNode(node) {
     const key = node[this.key];
+    // 根据key找到当前节点
     const currNode = this.nodesMap[key];
     this.setCurrentNode(currNode);
   }
 
   setCurrentNodeKey(key) {
     if (key === null || key === undefined) {
+      // 如果key不存在，当前节点设置为未选中
       this.currentNode && (this.currentNode.isCurrent = false);
       this.currentNode = null;
       return;
     }
+    // 根据key 获取节点
     const node = this.getNode(key);
+    // 如果节点存在，设置为当前节点
     if (node) {
       this.setCurrentNode(node);
     }

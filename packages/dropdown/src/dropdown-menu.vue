@@ -28,16 +28,20 @@
 
     data() {
       return {
+        // dropdown 的大小
         size: this.dropdown.dropdownSize
       };
     },
 
+    // 子组件注入的 dropdown
     inject: ['dropdown'],
 
     created() {
+      // 挂载 更新弹出层事件
       this.$on('updatePopper', () => {
         if (this.showPopper) this.updatePopper();
       });
+      // 挂载 可见事件
       this.$on('visible', val => {
         this.showPopper = val;
       });
@@ -52,9 +56,11 @@
     },
 
     watch: {
+      // 监视 placement变化
       'dropdown.placement': {
         immediate: true,
         handler(val) {
+          // 当前的placement
           this.currentPlacement = val;
         }
       }

@@ -30,20 +30,27 @@
     components: { ElCollapseTransition },
 
     props: {
+      // 唯一标志 string/null
       index: {
         type: String,
         required: true
       },
+      // 展开 sub-menu 的延时
       showTimeout: {
         type: Number,
         default: 300
       },
+      // 收起 sub-menu 的延时
       hideTimeout: {
         type: Number,
         default: 300
       },
+      // 弹出菜单的自定义类名
       popperClass: String,
+      // 是否禁用
       disabled: Boolean,
+      // 是否将弹出菜单插入至 body 元素。在菜单的定位出现问题时，可尝试修改该属性
+      // 一级子菜单：true / 非一级子菜单：false
       popperAppendToBody: {
         type: Boolean,
         default: undefined
@@ -61,8 +68,10 @@
     },
     watch: {
       opened(val) {
+        // 如果是菜单弹出
         if (this.isMenuPopup) {
           this.$nextTick(_ => {
+            // 更新弹出层
             this.updatePopper();
           });
         }
@@ -71,6 +80,8 @@
     computed: {
       // popper option
       appendToBody() {
+        // 如果插入到body是undefined, 根据是不是第一级菜单判断是否插入到body,
+        // 否则根据配置
         return this.popperAppendToBody === undefined
           ? this.isFirstLevel
           : this.popperAppendToBody;
@@ -78,7 +89,9 @@
       menuTransitionName() {
         return this.rootMenu.collapse ? 'el-zoom-in-left' : 'el-zoom-in-top';
       },
+      // 已打开
       opened() {
+        // 如果当前根菜单的 打开的菜单数组中包含了当前菜单的索引，则已打开
         return this.rootMenu.openedMenus.indexOf(this.index) > -1;
       },
       active() {
@@ -86,18 +99,22 @@
         const submenus = this.submenus;
         const items = this.items;
 
+        // 遍历所有的菜单
         Object.keys(items).forEach(index => {
+          // 如果存在 一个激活项，设置为激活
           if (items[index].active) {
             isActive = true;
           }
         });
 
+        // 遍历所有的二级菜单，如果有一个二级菜单激活，设置为激活
         Object.keys(submenus).forEach(index => {
           if (submenus[index].active) {
             isActive = true;
           }
         });
 
+        // 返回是否激活
         return isActive;
       },
       hoverBackground() {
@@ -135,23 +152,31 @@
       },
       isFirstLevel() {
         let isFirstLevel = true;
+        // 获取当前组件的父组件
         let parent = this.$parent;
+        // 如果父组件存在，且父组件不是根组件
         while (parent && parent !== this.rootMenu) {
+          // 如果父组件的名称是 ['ElSubmenu', 'ElMenuItemGroup']
           if (['ElSubmenu', 'ElMenuItemGroup'].indexOf(parent.$options.componentName) > -1) {
+            // 不是一级菜单 ，跳出循环
             isFirstLevel = false;
             break;
           } else {
+            // 否则继续找父级的父组件，继续遍历
             parent = parent.$parent;
           }
         }
+        // 返回是不是一级菜单
         return isFirstLevel;
       }
     },
     methods: {
       handleCollapseToggle(value) {
         if (value) {
+          // 执行初始化弹出层方法
           this.initPopper();
         } else {
+          // 执行组件的销毁方法
           this.doDestroy();
         }
       },
@@ -232,6 +257,7 @@
         title && (title.style.backgroundColor = this.rootMenu.backgroundColor || '');
       },
       updatePlacement() {
+        // 当前位置= 如果模式是水平 且 是第一级菜单 则在底部开始的地方弹出 ，否则在右侧开始的地方弹出
         this.currentPlacement = this.mode === 'horizontal' && this.isFirstLevel
           ? 'bottom-start'
           : 'right-start';
@@ -243,6 +269,7 @@
       }
     },
     created() {
+      // 在created中挂载监听事件
       this.$on('toggle-collapse', this.handleCollapseToggle);
       this.$on('mouse-enter-child', () => {
         this.mouseInChild = true;
@@ -254,8 +281,10 @@
       });
     },
     mounted() {
+      // 挂载时，将当前组件挂载到父级菜单和根菜单
       this.parentMenu.addSubmenu(this);
       this.rootMenu.addSubmenu(this);
+      // 初始化弹出层
       this.initPopper();
     },
     beforeDestroy() {
@@ -279,6 +308,8 @@
         isFirstLevel
       } = this;
 
+      // 弹出的菜单 el-menu--${mode} popperClass
+      // el-menu el-menu--popup
       const popupMenu = (
         <transition name={menuTransitionName}>
           <div
@@ -298,6 +329,7 @@
         </transition>
       );
 
+      // 行内菜单 el-menu el-menu--inline
       const inlineMenu = (
         <el-collapse-transition>
           <ul
@@ -310,11 +342,15 @@
         </el-collapse-transition>
       );
 
+      // 二级菜单的标题图标
       const submenuTitleIcon = (
-        rootMenu.mode === 'horizontal' && isFirstLevel ||
-        rootMenu.mode === 'vertical' && !rootMenu.collapse
+        rootMenu.mode === 'horizontal' && isFirstLevel || // 如果是水平 并且是 一级菜单 向下
+        rootMenu.mode === 'vertical' && !rootMenu.collapse // 如果是垂直 且 根菜单没有折叠 向下
       ) ? 'el-icon-arrow-down' : 'el-icon-arrow-right';
 
+      // el-submenu
+      // el-submenu__title
+      // el-submenu__icon-arrow
       return (
         <li
           class={{

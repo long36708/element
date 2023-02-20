@@ -10,29 +10,39 @@ export default {
   mixins: [Popper],
 
   props: {
+    // 延迟出现，单位毫秒
     openDelay: {
       type: Number,
       default: 0
     },
+    // Tooltip 是否可用
     disabled: Boolean,
+    // 手动控制模式，设置为 true 后，mouseenter 和 mouseleave 事件将不会生效
     manual: Boolean,
+    // 默认提供的主题
     effect: {
       type: String,
       default: 'dark'
     },
+    // 箭头偏移量
     arrowOffset: {
       type: Number,
       default: 0
     },
+    // 为 Tooltip 的 popper 添加类名
     popperClass: String,
+    // 显示的内容，也可以通过 slot#content 传入 DOM
     content: String,
+    //	是否显示 Tooltip 箭头，更多参数可见Vue-popper
     visibleArrow: {
       default: true
     },
+    // 定义渐变动画
     transition: {
       type: String,
       default: 'el-fade-in-linear'
     },
+    // popper.js 的参数
     popperOptions: {
       default() {
         return {
@@ -41,14 +51,17 @@ export default {
         };
       }
     },
+    // 鼠标是否可进入到 tooltip 中
     enterable: {
       type: Boolean,
       default: true
     },
+    // Tooltip 出现后自动隐藏延时，单位毫秒，为 0 则不会自动隐藏
     hideAfter: {
       type: Number,
       default: 0
     },
+    // Tooltip 组件的 tabindex
     tabindex: {
       type: Number,
       default: 0
