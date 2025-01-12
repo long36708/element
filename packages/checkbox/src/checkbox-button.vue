@@ -132,6 +132,15 @@
         return this._checkboxGroup ? this._checkboxGroup.value : this.value;
       },
 
+      /**
+       * 计算复选框被选中时的样式
+       *
+       * 此方法根据复选框组的填充色（fill）和文本颜色（textColor）来动态生成复选框被选中时的样式
+       * 它确保了复选框的背景色、边框色、文字颜色以及左侧的阴影颜色与复选框组的样式保持一致
+       * 这样做是为了提供一个统一且视觉上协调的用户体验
+       *
+       * @returns {Object} 返回一个包含样式的对象
+       */
       activeStyle() {
         return {
           backgroundColor: this._checkboxGroup.fill || '',
