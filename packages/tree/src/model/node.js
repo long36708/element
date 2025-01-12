@@ -29,8 +29,8 @@ export const getChildState = node => {
 };
 
 const reInitChecked = function(node) {
-  // 如果传入节点的子节点长度为0 ，直接return
-  if (node.childNodes.length === 0) return;
+    // 如果传入节点的子节点长度为0 ，直接return
+  if (node.childNodes.length === 0 || node.loading) return;
 
   // 获取子节点的状态，所有，无，半选中
   const {all, none, half} = getChildState(node.childNodes);
@@ -547,16 +547,13 @@ export default class Node {
       this.loading = true;
 
       const resolve = (children) => {
-        // 加载完成
-        this.loaded = true;
-        this.loading = false;
-        // 孩子节点 为空
         this.childNodes = [];
 
         // 创建孩子节点
         this.doCreateChildren(children, defaultProps);
-
-        // 更新叶子节点状态
+        this.loaded = true;
+        this.loading = false;
+          // 更新叶子节点状态
         this.updateLeafState();
         if (callback) {
           callback.call(this, children);
